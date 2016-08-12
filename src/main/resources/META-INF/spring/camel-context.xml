@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ~ Licensed under the Apache License, Version 2.0 (the "License"); ~ 
+	you may not use this file except in compliance with the License. ~ You may 
+	obtain a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0 
+	~ ~ Unless required by applicable law or agreed to in writing, software ~ 
+	distributed under the License is distributed on an "AS IS" BASIS, ~ WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. ~ See the 
+	License for the specific language governing permissions and ~ limitations 
+	under the License. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:cxf="http://camel.apache.org/schema/cxf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://camel.apache.org/schema/spring
+						http://camel.apache.org/schema/spring/camel-spring.xsd
+						http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+						http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+						http://www.springframework.org/schema/osgi-compendium
+						http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+						http://www.springframework.org/schema/context
+       					http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<osgix:cm-properties id="myProperties" persistent-id="logger.configuration" /> 
+    <context:property-placeholder ignore-unresolvable="true" properties-ref="myProperties" />
+
+	<!--  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>profile:configuration.properties</value>
+		</property>
+	</bean> -->
+	
+	<bean id="prop" class="org.test.PropertyPrinter">
+		<property name="property">
+			<value>${test-property}</value>
+		</property>
+	</bean>
+
+	<!-- Contexto de camel -->
+	<camelContext id="CalendarioCatalogos" xmlns="http://camel.apache.org/schema/spring"
+		useMDCLogging="true">
+		<route trace="true" streamCache="true" id="calendarioCatalogos">
+			<from uri="timer:test?period=10000" />
+			<to uri="bean:prop?method=print" />
+			<log message="Logging ${body}" />
+		</route>
+	</camelContext>
+</beans>
